@@ -1,19 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { surpriseMePrompts } from "../constants";
+import { URL } from "../constants";
 import { FormField, Loader } from "../components";
-
-const getRandomPrompt = (prompt) => {
-  const randomInd = Math.floor(Math.random() * surpriseMePrompts.length);
-
-  const randomPrompt = surpriseMePrompts[randomInd];
-
-  if (randomPrompt === prompt) {
-    return getRandomPrompt(prompt);
-  }
-
-  return randomPrompt;
-};
+import { getRandomPrompt } from "../utils/index";
 
 const CreateImg = () => {
   const navigate = useNavigate();
@@ -25,9 +14,57 @@ const CreateImg = () => {
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const generateImg = () => {};
+  const generateImg = async () => {
+    if (form.prompt) {
+      try {
+        setGeneratingImg(true);
+        const response = await fetch(`${URL}/api/v1/dalle`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt: form.prompt }),
+        });
 
-  const handleSubmit = () => {};
+        const data = await response.json();
+
+        setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
+      } catch (error) {
+        console.log(error);
+        alert("Error at generating img client side");
+      } finally {
+        setGeneratingImg(false);
+      }
+    } else {
+      alert(" Please Enter a Prompt");
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (form.prompt && form.photo) {
+      setLoading(true);
+      try {
+        const response = await fetch(`${URL}/api/v1/post`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(form),
+        });
+
+        await response.json();
+        navigate("/");
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      alert("Please enter a prompt and generate an image");
+    }
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -39,16 +76,19 @@ const CreateImg = () => {
   };
 
   return (
-    <section className="max-w-7xl mx-auto">
-      <div>
+    <section className="max-w-4xl mx-auto">
+      <div className="flex flex-col justify-center items-center">
         <h1 className="font-extrabold text-[32px]">Create</h1>
         <p className="mt-2 text-[#666e75] text-[16px] max-w[500px]">
           Create cool ilustration image through Dall-E Ai
         </p>
       </div>
 
-      <form className="mt-16 max-w-3xl" onSubmit={handleSubmit}>
-        <div className="flex flex-col gap-5">
+      <form
+        className="mt-16 flex flex-col text-center items-center"
+        onSubmit={handleSubmit}
+      >
+        <div className="flex flex-col  gap-5 ">
           <FormField
             labelName="Your name"
             type="text"
@@ -67,7 +107,7 @@ const CreateImg = () => {
             isSurpriseMe
             handleSurpriseMe={handleSurpriseMe}
           />
-          <div className="relative bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500  focus:border-blue-500 w-64 p-3 h-64 flex justify-center items-center ">
+          <div className="relative bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500  focus:border-blue-500 w-[70vw] sm:w-[50vw] p-3 h-[70vw] sm:h-[50vw] flex justify-center items-center ">
             {form.photo ? (
               <img
                 src={form.photo}
@@ -75,21 +115,23 @@ const CreateImg = () => {
                 className="w-full h-full object-contain"
               />
             ) : (
-              <img
-                // src={preview}
-                alt="preview"
-                className="w-9/12 h-9/12 object-contain opacity-40"
-              />
-            )}
-
-            {generatingImg && (
-              <div className="absolute inset-0 z-0 flex justify-center items-center bg-[rgba(0,0,0,0.5)] rounded-lg">
-                <Loader />
-              </div>
+              <>
+                <img
+                  // src={preview}
+                  alt="preview"
+                  className="w-9/12 h-9/12 object-contain opacity-40"
+                />
+                {generatingImg && (
+                  <div className="absolute inset-0 z-0 flex justify-center items-center bg-[rgba(0,0,0,0.5)] rounded-lg">
+                    <Loader />
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
-        <div className="mt-5 flex gap-5">
+
+        <div className="mt-5 gap-5">
           <button
             type="button"
             onClick={generateImg}
@@ -99,7 +141,7 @@ const CreateImg = () => {
           </button>
         </div>
 
-        <div className="mt-10">
+        <div className="mt-10 flex flex-col items-center ">
           <p className="mt-2 text-[#666] text-[14px] ">
             once you generated the image you want, you can share it in the
             community
@@ -109,7 +151,7 @@ const CreateImg = () => {
             // onClick={generateImg}
             className=" mt-3 text-white bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-3 text-center "
           >
-            {loading ? "Sharing..." : "Share To Community"}
+            {loading ? <Loader /> : "Post To Community"}
           </button>
         </div>
       </form>

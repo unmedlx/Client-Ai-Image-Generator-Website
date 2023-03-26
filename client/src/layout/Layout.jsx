@@ -5,7 +5,9 @@ const Layout = ({ children }) => {
   return (
     <div>
       <Navbar></Navbar>
-      <main className="h-[calc(100vh-4rem)] bg-[#f9fafe] p-4">{children}</main>
+      <main className="min-h-[calc(100vh-4rem)] bg-[var(--color-primary)] p-4">
+        {children}
+      </main>
     </div>
   );
 };
