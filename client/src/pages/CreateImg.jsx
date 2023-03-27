@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { URL } from "../constants";
 import { FormField, Loader } from "../components";
 import { getRandomPrompt } from "../utils/index";
+import { imgPlaceholder } from "../assets";
 
 const CreateImg = () => {
   const navigate = useNavigate();
@@ -14,8 +15,10 @@ const CreateImg = () => {
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const generateImg = async () => {
-    if (form.prompt) {
+  const generateImg = async (e) => {
+    e.preventDefault();
+
+    if (form.prompt && form.name) {
       try {
         setGeneratingImg(true);
         const response = await fetch(`${URL}/api/v1/dalle`, {
@@ -36,7 +39,7 @@ const CreateImg = () => {
         setGeneratingImg(false);
       }
     } else {
-      alert(" Please Enter a Prompt");
+      alert(" Please Enter Your Name and a Prompt");
     }
   };
 
@@ -62,7 +65,7 @@ const CreateImg = () => {
         setLoading(false);
       }
     } else {
-      alert("Please enter a prompt and generate an image");
+      alert("Please generate an image First");
     }
   };
 
@@ -117,7 +120,7 @@ const CreateImg = () => {
             ) : (
               <>
                 <img
-                  // src={preview}
+                  src={imgPlaceholder}
                   alt="preview"
                   className="w-9/12 h-9/12 object-contain opacity-40"
                 />
