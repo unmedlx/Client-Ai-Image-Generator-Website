@@ -30,7 +30,6 @@ const CreateImg = () => {
         });
 
         const data = await response.json();
-
         setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
       } catch (error) {
         console.log(error);

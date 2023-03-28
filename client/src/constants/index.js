@@ -47,4 +47,5 @@ export const surpriseMePrompts = [
   "A Space Shuttle flying above Cape Town, digital art",
 ];
 
-export const URL = `http://localhost:8080`;
+export const URL_LOCAL = `http://localhost:8080`;
+export const URL = `https://server-ai-img-generator.cyclic.app`;
