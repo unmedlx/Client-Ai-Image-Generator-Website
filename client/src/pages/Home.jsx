@@ -48,7 +48,7 @@ const Home = () => {
     let search = searchText.toLowerCase();
 
     setSearchText(e.target.value);
-    console.log(searchText);
+    // console.log(searchText);
 
     setTimeout(() => {
       const searchItems = posts.filter(
