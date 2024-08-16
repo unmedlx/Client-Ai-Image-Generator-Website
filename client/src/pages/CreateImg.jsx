@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { URL } from "../constants";
-import { FormField, Loader } from "../components";
-import { getRandomPrompt } from "../utils/index";
-import { imgPlaceholder } from "../assets";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { URL } from '../constants';
+import { FormField, Loader } from '../components';
+import { getRandomPrompt } from '../utils/index';
+import { imgPlaceholder } from '../assets';
 
 const CreateImg = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    name: "",
-    prompt: "",
-    photo: "",
+    name: '',
+    prompt: '',
+    photo: '',
   });
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -20,11 +20,13 @@ const CreateImg = () => {
 
     if (form.prompt && form.name) {
       try {
+        console.log(form);
+
         setGeneratingImg(true);
         const response = await fetch(`${URL}/api/v1/dalle`, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({ prompt: form.prompt }),
         });
@@ -33,12 +35,12 @@ const CreateImg = () => {
         setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
       } catch (error) {
         console.log(error);
-        alert("Error at generating img client side");
+        alert('Error at generating img client side');
       } finally {
         setGeneratingImg(false);
       }
     } else {
-      alert(" Please Enter Your Name and a Prompt");
+      alert(' Please Enter Your Name and a Prompt');
     }
   };
 
@@ -49,22 +51,22 @@ const CreateImg = () => {
       setLoading(true);
       try {
         const response = await fetch(`${URL}/api/v1/post`, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(form),
         });
 
         await response.json();
-        navigate("/");
+        navigate('/');
       } catch (error) {
         console.log(error);
       } finally {
         setLoading(false);
       }
     } else {
-      alert("Please generate an image First");
+      alert('Please generate an image First');
     }
   };
 
@@ -86,10 +88,8 @@ const CreateImg = () => {
         </p>
       </div>
 
-      <form
-        className="mt-16 flex flex-col text-center items-center"
-        onSubmit={handleSubmit}
-      >
+      <form className="mt-16 flex flex-col text-center items-center" onSubmit={handleSubmit}>
+        {/* input */}
         <div className="flex flex-col  gap-5 ">
           <FormField
             labelName="Your name"
@@ -111,11 +111,7 @@ const CreateImg = () => {
           />
           <div className="relative bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500  focus:border-blue-500 w-[70vw] sm:w-[50vw] p-3 h-[70vw] sm:h-[50vw] flex justify-center items-center ">
             {form.photo ? (
-              <img
-                src={form.photo}
-                alt={form.prompt}
-                className="w-full h-full object-contain"
-              />
+              <img src={form.photo} alt={form.prompt} className="w-full h-full object-contain" />
             ) : (
               <>
                 <img
@@ -132,28 +128,27 @@ const CreateImg = () => {
             )}
           </div>
         </div>
-
+        {/* submit btn */}
         <div className="mt-5 gap-5">
           <button
             type="button"
             onClick={generateImg}
             className="text-white bg-green-700 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-3 text-center "
           >
-            {generatingImg ? "Generating..." : "Generate Image"}
+            {generatingImg ? 'Generating...' : 'Generate Image'}
           </button>
         </div>
-
+        {/* comunity post */}
         <div className="mt-10 flex flex-col items-center ">
           <p className="mt-2 text-[#666] text-[14px] ">
-            once you generated the image you want, you can share it in the
-            community
+            once you generated the image you want, you can share it in the community
           </p>
           <button
             type="submit"
             // onClick={generateImg}
             className=" mt-3 text-white bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-3 text-center "
           >
-            {loading ? <Loader /> : "Post To Community"}
+            {loading ? <Loader /> : 'Post To Community'}
           </button>
         </div>
       </form>
